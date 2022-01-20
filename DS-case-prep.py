@@ -56,11 +56,56 @@ Amazon, Propensity Modeling for AWS Sales: How would you identify key attributes
 """:
 """
 Clarify:
+1. I know that the AWS service provides various business solutions from computing, database, and AI tools. Do I need to predict which product a particular customer will likely convert to again? Or, should I focus on whether a customer will convert again at all?
+2. Thank you for the clarification. I have another question: what do you mean by a “repeat purchase?” I assume that the AWS sales team provides enterprise solutions. In this case, they most likely care about long-term usages such as annual subscriptions or contracts. Would the repeat purchase be based on if they purchased a product then another one immediately? Or, would it be based on a long-term horizon, meaning that a customer purchased a product this year and again the following year. (In this case, a repeat purchase occurs when a customer purchased a product the first year and purchased again the following year.)
+
+Constrain:
+I can tell that this problem involves propensity modeling given that the problem involves finding attributes that predict customer conversion.
+
+Plan:
+Based on these considerations, my plan is to discuss data preparation, statistical methods, and finally a stakeholder recommendation. How does this sound?
+
+Methods:
+1. Data Prep: I can think of three types of data: (1) user profile (2) user-product behavior, and (3) marketing engagements. Each data type contains the following attributes: User profile - business name, industry, years in operation, and location. User-product behavior - the type of product purchased and engagement metrics (i.e. average # of active sessions the past 1 month), and new products browsed on the AWS platform. Marketing engagements - newsletter sign-ups, free-trial enrollments and advertisement clicks.
+2. EDA/Descriptive Stats: I would conduct an exploratory data analysis to understand how the attributes correlate with the target variable - the recurrent purchase of a product the following year. In addition, the EDA informs how I should clean and preprocess the data for modeling.
+3. Modeling: Label derived from purchase indicator, binary on whether a user purchased again in the following year. I would need at least two years of data. We could use log regression or random forest regression. F1 score to balance precision and recall.
+4. Post-modeling: How would you address the main question on identifying attributes that lead to a repeat purchase? Use features with statistical significance and rank based on coefficient values. Can use a partial dependence plot to understand the probablity of conversion across a variable range while holding others constant, which enables us to isolate a subset of values in a categorical variable or a bracket within a continuous variable that is highly correlated with the repeat conversion.
+
+Conclude:
+There are two ways this could be helpful for the sales team. First, the propensity model helps detect users that are most likely to convert again. The sales team can invest their efforts in high-intent customers as there are less time and $ cost involved in converting those users compared to the low-intent customers. Secondly, once the high-intent users are identified, I can create customer segments based on key attributes. The segments are helpful for the sales team in creating custom sales funnel for each segment.
+
+""",
+
+"""
+Amazon, Fraud on Amazon with No Labels: Presume that you have a dataset with 30 days of IP address, device ID, and email address. How would you classify an Amazon user as a fraudster or not given that you do not have labels?
+""":
+"""
+Question:
+1. Can I start by asking if the fraudsters that need to be detected are among the sellers or consumers? It’s my experience that behaviors are quite different whether the fraudster is on the seller-side or consumer-side. (Consumers)
+2. Great. I have a follow-up question. There could be multiple types of fraudulent activities on the consumer side. Can I assume that they are fraudsters who commit chargebacks? An example could be fraudsters who purchased and received goods then claim that they did not make the transaction to receive a refund? (Yes)
+3. I have another follow-up question, which is about the data itself. Is it fair to assume that a user could have multiple IP addresses, device ID’s and email addresses?
+
+Constrain:
+I think I can start ideating a potential solution. It’s my understanding that a fraudster would create multiple accounts using a combination of different IP addresses, device ID’s and email addresses.
+A normal user would most likely have one email address tied to a single IP address which is usually his home internet. However, a fraudster could have multiple email addresses linked to an IP address because he is attempting to establish multiple accounts.
+Having multiple accounts would allow him to continue committing chargeback fraud even if one of the accounts gets banned.
+
+Methods:
+1. Data Prep/Feature Engineering: Well, we need to derive a feature set that counts the distinct IP addresses per email address for the past 30 days. We can use this strategy for other combinations of ID variables. Here’s a sample of features that can be created:
+# of distinct email addresses per IP address the past 7 days
+# of distinct email addresses per IP address the past 14 days
+# of distinct email addresses per IP address the past 30 days
+# of distinct device IDs per email address the past 7 days
+
+2. Statistical methods: Option 1: rule-based approach where we look at the probability distribution per feature. Apply a threshold on the 99th percentile. We apply the threshold across the variables to derive a subset of users who are the most suspicious. Obviously, this is not model-based, but it should provide a good start to labeling potential fraudsters. Now, we need to verify those labels so we send the subset to the review team for verification on the label. This will help us identify the precision of the system. Option 2: The other idea uses a deep learning model. An auto-encoder is an unsupervised algorithm that helps flag outliers which is what we want to do on the feature set. We can use the reconstruction error (measured in MSE) to identify users which high outlier scores. We can repeat the procedure of manually verifying those users by sending those to the review team.
+
+3. Stakeholder reccomendation/Conclude: Last step is to verify the labels with the review team.
 """
 }
 
 from numpy.random import randint
 i = randint(0, len(case_questions))
+i=3
 entry_list = list(case_questions.items())
 print(entry_list[i][0])
 bool = input("Want the answer (reply 'Yes'/'No'):?")
