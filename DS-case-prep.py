@@ -105,7 +105,6 @@ Methods:
 
 from numpy.random import randint
 i = randint(0, len(case_questions))
-i=3
 entry_list = list(case_questions.items())
 print(entry_list[i][0])
 bool = input("Want the answer (reply 'Yes'/'No'):?")
